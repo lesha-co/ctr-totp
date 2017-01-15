@@ -1,14 +1,7 @@
 #include <3ds.h>
-#include <cstdio>
-#include "sha1.hpp"
-#include "base32.h"
-#include "hmac.h"
-#include <string>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
+#include <unistd.h>
+#include "tests.h"
+#include "TOTP.h"
 int main(int argc, char **argv)
 {
     gfxInitDefault();
@@ -16,24 +9,9 @@ int main(int argc, char **argv)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /// run once begin
     ///
+    tests::testAll();
+    TOTP* totp = new TOTP("JBSWY3DPEHPK3PXP", 0, 30, 6);
 
-    vector<u8> v_key = base32::decode("JBSWY3DPEHPK3PXP");
-    vector<u8> v_message = {0x48, 0x65, 0x6c, 0x6c, 0x6f};
-    vector<u8> bytes = hmac::encode(v_key, v_message);
-    for (u8 byte : bytes) {
-        printf("%x", byte);
-    }
-    printf("\n");
-
-
-    /*  const string b32 = "JBSWY3DPEHPK3PXP";
-
-      vector<u8> bytes = base32::decode(b32);
-      for (u8 byte : bytes) {
-          printf("%x", byte);
-      }
-      printf("\n");
-  */
     ///
     /// run once end
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,9 +24,13 @@ int main(int argc, char **argv)
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// run loop begin
         ///
-        
 
-       
+        TotpResult tr = totp ->get();
+        printf("%s [%2d]\n",
+               tr.totp.c_str(),
+               tr.remaining_seconds);
+        usleep(1000000);
+
         ///
         /// run loop end
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

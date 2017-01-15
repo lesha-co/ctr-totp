@@ -8,13 +8,13 @@
 #include <vector>
 #include <string>
 #include <math.h>
+#include <cstdio>
+#include "misc.h"
 #include <3ds/types.h>
 
 class base32 {
 public:
     static std::vector<u8> decode(std::string b32);
-    static u8 bits_to_int(std::vector<u8> vector);
-    static std::vector<u8> int_to_bits(u32 value);
 };
 
 

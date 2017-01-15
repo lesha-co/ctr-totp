@@ -11,6 +11,7 @@
 class hmac {
 public:
     static std::vector<u8> encode(std::vector<u8> key, std::vector<u8> message);
+    static std::vector<u8> u8_sha1(std::vector<u8> message);
 };
 
 
