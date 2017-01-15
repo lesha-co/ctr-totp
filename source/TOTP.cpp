@@ -4,19 +4,17 @@
 
 #include "TOTP.h"
 using namespace std;
-const u32 TZOFFSET = 3*60*60;
-u32 TOTP::getUnixEpochTime(){
-    return (u32)time(0) - TZOFFSET;
+
+u32 TOTP::getSeconds(u32 unixEpochTime){
+    return unixEpochTime - this->epoch;
 }
 
-u32 TOTP::getSeconds(){
-    return getUnixEpochTime() - this->epoch;
+u32 TOTP::getRemainingSeconds(u32 unixEpochTime){
+    return this->interval - (this->getSeconds(unixEpochTime) % this->interval);
 }
-u32 TOTP::getRemainingSeconds(){
-    return this->interval - (this->getSeconds() % this->interval);
-}
-vector<u8> TOTP::getCounter(){
-    u32 rounds = this->getSeconds() / this->interval;
+
+vector<u8> TOTP::getCounter(u32 unixEpochTime){
+    u32 rounds = this->getSeconds(unixEpochTime) / this->interval;
     vector<u8> vec = misc::int_to_bytes(rounds);
     vec = misc::leftpad(vec, 8);
     return vec;
@@ -28,10 +26,11 @@ TOTP::TOTP(std::string secret_base32, u32 epoch, u32 interval, u8 token_length){
     this->interval = interval;
     this->token_length = token_length;
 }
-TotpResult TOTP::get() {
+
+TotpResult TOTP::get(u32 unixEpochTime) {
     TotpResult tr;
     // 1. Calculate C as the number of times TI has elapsed after T0.
-    vector<u8> counter = getCounter();
+    vector<u8> counter = getCounter(unixEpochTime);
     // 2. Compute the HMAC hash H with C as the message and K as the key (the HMAC algorithm is defined in the
     //    previous section, but also most cryptographical libraries support it). K should be passed as it is, C should
     //    be passed as a raw 64-bit unsigned integer.
@@ -55,8 +54,6 @@ TotpResult TOTP::get() {
     tr.offset = offset;
     tr.integer = integer;
     tr.four_bytes = four_bytes;
-    tr.remaining_seconds= this->getRemainingSeconds();
-
-
+    tr.remaining_seconds= this->getRemainingSeconds(unixEpochTime);
     return tr;
 }

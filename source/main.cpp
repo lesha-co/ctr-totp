@@ -2,6 +2,11 @@
 #include <unistd.h>
 #include "tests.h"
 #include "TOTP.h"
+
+const u32 TZOFFSET = 3*60*60;
+u32 getUnixEpochTime(){
+    return (u32)time(0) - TZOFFSET;
+}
 int main(int argc, char **argv)
 {
     gfxInitDefault();
@@ -25,7 +30,7 @@ int main(int argc, char **argv)
         /// run loop begin
         ///
 
-        TotpResult tr = totp ->get();
+        TotpResult tr = totp ->get(getUnixEpochTime());
         printf("%s [%2d]\n",
                tr.totp.c_str(),
                tr.remaining_seconds);

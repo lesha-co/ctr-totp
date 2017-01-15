@@ -8,8 +8,6 @@ using namespace std;
 const string BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const char BASE32_PADDING = '=';
 
-
-
 vector<u8> base32::decode(std::string b32) {
     vector<u8> bytes;
     vector<u8> v_bits;
@@ -25,11 +23,6 @@ vector<u8> base32::decode(std::string b32) {
             return {};
         }
         vector<u8> piece = misc::leftpad(misc::int_to_bits(index), 5);
-        /*printf(" |> %c (%3u)= ", b32[i], index);
-        for(u8 bit : piece){
-            printf(" %d ", bit);
-        }
-        printf("\n");*/
         v_bits.insert( v_bits.end(), piece.begin(), piece.end() );
 
         while (v_bits.size() >= 8){
@@ -37,17 +30,10 @@ vector<u8> base32::decode(std::string b32) {
             vector<u8>::const_iterator first = v_bits.begin();
             vector<u8>::const_iterator last = v_bits.begin() + 8;
             vector<u8> byte(first, last);
-            /*printf("<|  %d (0x%x) (%c): ", bits_to_int(byte), bits_to_int(byte), bits_to_int(byte));
-            for(u8 bit : byte){
-                printf("%d", bit);
-            }
-            printf("\n");*/
             bytes.push_back (misc::bits_to_int(byte));
             // remove them from original vector
             vector<u8>(v_bits.begin()+8, v_bits.end()).swap(v_bits);
         }
     }
-
     return bytes;
-
 }

@@ -28,12 +28,11 @@ class TOTP {
     u8 token_length;
 public:
     TOTP(std::string secret_base32, u32 epoch, u32 interval, u8 token_length);
-
-    TotpResult get();
-
-    u32 getRemainingSeconds();
-    u32 getSeconds();
-    std::vector<u8> getCounter();
+    TotpResult get(u32 unixEpochTime);
+private:
+    u32 getRemainingSeconds(u32 unixEpochTime);
+    u32 getSeconds(u32 unixEpochTime);
+    std::vector<u8> getCounter(u32 unixEpochTime);
     static u32 getUnixEpochTime();
 };
 
