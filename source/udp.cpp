@@ -58,7 +58,7 @@ void UdpClient::send(std::vector<u8> vec) {
         printf("can't send messages longer than %d\n", BUFLEN);
     }
     ///run
-    printf("sending %d bytes:\n%s\n",vec.size(), misc::vector_u8_str(vec).c_str());
+    //printf("sending %d bytes:\n%s\n",vec.size(), misc::vector_u8_str(vec).c_str());
     memset(message,'\0', BUFLEN);
     for (u32 i = 0; i < vec.size(); ++i) {
         message[i] = vec[i];
@@ -71,22 +71,22 @@ void UdpClient::send(std::vector<u8> vec) {
 }
 std::vector<u8> UdpClient::recv() {
     memset(buf,'\0', BUFLEN);
-    if (recvfrom(sockfd,
-                 buf,
-                 BUFLEN,
-                 0,
-                 (struct sockaddr *) &si_other,
-                 &slen) == -1) {
+	s32 recv_size;
+	recv_size = recvfrom(sockfd,
+		buf,
+		BUFLEN,
+		0,
+		(struct sockaddr *) &si_other,
+		&slen);
+    if (recv_size == -1) {
         printf("Failed to recvfrom()\n");
+		return vector<u8>();
     }
-    vector<u8> response;
-    for (u32 j = 0; j < BUFLEN; ++j) {
-        if (buf[j]){
+	vector<u8> response;
+    for (s32 j = 0; j < recv_size; ++j) {
             response.push_back(buf[j]);
-        }
-
     }
-    printf("received:\n%s\n", misc::vector_u8_str(response).c_str());
+    //printf("received:\n%s\n", misc::vector_u8_str(response).c_str());
     return response;
 }
 

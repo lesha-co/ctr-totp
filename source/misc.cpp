@@ -5,11 +5,20 @@
 using namespace std;
 string misc::vector_u8_str(vector<u8> vec){
     ostringstream o;
-    o << "0x";
-    for (u8 item:vec) {
-        o << hex << setfill('0') << setw(2);
-        o << (int)item;
-    }
+	o << "\n";
+	for (size_t i = 0; i < 0x8; i++){
+		o << ' ' << hex << setfill('0') << setw(2);
+		o << (int)i;
+	}
+	for (size_t i = 0; i < vec.size(); i++){
+		if (i % 0x8 == 0) {
+			o << "\n";
+		}
+		o << ' ' << hex << setfill('0') << setw(2);
+		o << (int)vec[i];
+
+	}
+    
     return  o.str();
 }
 

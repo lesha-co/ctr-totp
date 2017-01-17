@@ -2,12 +2,13 @@
 #include <unistd.h>
 #include "tests.h"
 #include "TOTP.h"
-#include "NTPClock.h"
+#include "math.h"
+#include "../include/NTPClock.h"
 
 
 const s32 TZOFFSET = 3*60*60;
-u32 getUnixEpochTime(){
-    return (u32)time(0) - TZOFFSET;
+u32 getUnixEpochTime(s32 OFFSET){
+    return (u32)time(0) - OFFSET;
 }
 int main(int argc, char **argv)
 {
@@ -19,15 +20,15 @@ int main(int argc, char **argv)
     /// run once begin
     ///
     consoleSelect(&top);
-    tests::testAll();
     TOTP* totp = new TOTP("JBSWY3DPEHPK3PXP", 0, 30, 6);
+	
     s32 ntp_offset = 0;
 
     printf("Trying NTP sync...\n");
     char domain[] =  "129.6.15.28";
     NTPClock* clock = new NTPClock(domain);
     if (clock->initialized()){
-        printf("clock initialized\n");
+        printf("Clock initialized\n");
         s32 ntp_time = clock->getNetworkTime();
         std::time_t localtime = std::time(nullptr);
         ntp_offset = localtime-ntp_time ;
@@ -36,7 +37,6 @@ int main(int argc, char **argv)
         printf("failed");
     }
 
-    usleep(30000000);
 
     ///
     /// run once end
@@ -53,18 +53,26 @@ int main(int argc, char **argv)
         consoleSelect(&top);
         consoleClear();
         std::time_t result = std::time(nullptr);
-        printf("local time is %s\nTZ offset is %+ld \nNTP offset is %+ld \n",
-               std::asctime(std::localtime(&result)),
-               TZOFFSET,
-               ntp_offset
+        printf("Local time is %s\n",
+               std::asctime(std::localtime(&result))
+               
         );
-
+		std::time_t ntp_time = result - ntp_offset;
+		printf("Network time is %s\n",
+			std::asctime(std::localtime(&ntp_time))
+		);
+		printf("TZ offset is %+ld \nNTP offset is %+ld\n", TZOFFSET, ntp_offset);
+		std::cout << "Local clock is "
+			<< (TZOFFSET > ntp_offset ?  "behind" : "ahead")
+			<< " by "
+			<< abs(TZOFFSET - ntp_offset)
+			<< " seconds\n";
 
 
 
         consoleSelect(&bottom);
 
-        TotpResult tr = totp ->get(getUnixEpochTime());
+        TotpResult tr = totp ->get(getUnixEpochTime(ntp_offset));
         printf("%s [%2d]\n",
                tr.totp.c_str(),
                tr.remaining_seconds);
