@@ -1,7 +1,7 @@
 //
 // Created by lichevsky on 15.01.17.
 //
-#include "../include/NTPClock.h"
+#include "NTPClock.h"
 
 using namespace std;
 

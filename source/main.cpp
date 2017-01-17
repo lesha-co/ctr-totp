@@ -3,7 +3,7 @@
 #include "tests.h"
 #include "TOTP.h"
 #include "math.h"
-#include "../include/NTPClock.h"
+#include "NTPClock.h"
 
 
 const s32 TZOFFSET = 3*60*60;
